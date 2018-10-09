@@ -72,10 +72,6 @@ const styles = theme => ({
 });
 
 class AppSearchBar extends Component {
-  constructor (props) {
-    super(props);
-  }
-  
   handleSubmit = (e) => {
     e.preventDefault();
     this.props.queryGiphyApi();
