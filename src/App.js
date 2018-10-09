@@ -110,14 +110,14 @@ class App extends Component {
       listOfGif = <GifList gifList={result} />
       return (
         <div className="App">
-          <AppSearchBar handleOnChange={this.handleOnChange} result={result} query={query} queryGiphyApi={this.queryGiphyApi} setOrder={this.setOrder}/>
+          <AppSearchBar handleOnChange={this.handleOnChange} queryGiphyApi={this.queryGiphyApi} />
           {listOfGif}
         </div>
       )
     } else {
       return (
         <div className="App">
-          <AppSearchBar handleOnChange={this.handleOnChange} result={result} query={query} queryGiphyApi={this.queryGiphyApi} setOrder={this.setOrder}/>        
+          <AppSearchBar handleOnChange={this.handleOnChange} queryGiphyApi={this.queryGiphyApi} />        
         </div>
       )
     }
