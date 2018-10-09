@@ -32,6 +32,24 @@ class App extends Component {
   calcOffset = (currentData, previousQuery, query) => {
     return query === previousQuery ? currentData.length : 0;
   }
+  
+  handleOnChange = (e) => {
+    this.setState({
+      query: e.target.value
+    });
+  }
+  
+  handleScroll() {
+    const windowHeight = window.innerHeight ? window.innerHeight : document.documentElement.offsetHeight;
+    const body = document.body;
+    const html = document.documentElement;
+    const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
+    const windowBottom = windowHeight + window.pageYOffset;
+
+    if (windowBottom >= docHeight - 500 && !this.state.querying) {
+      this.queryGiphyApi()
+    } 
+  }
 
   queryGiphyApi = () => {
     this.setState({querying: true});
@@ -55,24 +73,6 @@ class App extends Component {
     }).then((body) => {
       this.setResultData(body.data);
     })
-  }
-
-  handleOnChange = (e) => {
-    this.setState({
-      query: e.target.value
-    });
-  }
-
-  handleScroll() {
-    const windowHeight = window.innerHeight ? window.innerHeight : document.documentElement.offsetHeight;
-    const body = document.body;
-    const html = document.documentElement;
-    const docHeight = Math.max(body.scrollHeight, body.offsetHeight, html.clientHeight, html.scrollHeight, html.offsetHeight);
-    const windowBottom = windowHeight + window.pageYOffset;
-
-    if (windowBottom >= docHeight - 500 && !this.state.querying) {
-      this.queryGiphyApi()
-    } 
   }
   
   scrollToTop = () => {
