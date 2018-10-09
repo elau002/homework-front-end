@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import AppSearchBar  from './AppSearchBar';
+import ErrorMessage from './ErrorMessage';
 import GifList from './GifList';
 import './App.css';
 
@@ -7,18 +8,22 @@ class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      error: false,
+      errorMessage: '',
       previousQuery: '',
       result: [],
       query: '',
       querying: false
     };
-    this.setQueryHistory = this.setQueryHistory.bind(this);
-    this.setResultData = this.setResultData.bind(this);
+    this.calcOffset = this.calcOffset.bind(this);
+    this.displayErrorMessage = this.displayErrorMessage.bind(this);
     this.handleOnChange = this.handleOnChange.bind(this);
     this.handleScroll = this.handleScroll.bind(this);
+    this.hideErrorMessage = this.hideErrorMessage.bind(this);
     this.queryGiphyApi = this.queryGiphyApi.bind(this);
     this.scrollToTop = this.scrollToTop.bind(this);
-    this.calcOffset = this.calcOffset.bind(this);
+    this.setQueryHistory = this.setQueryHistory.bind(this);
+    this.setResultData = this.setResultData.bind(this);
   }
 
   componentDidMount() {
@@ -31,6 +36,18 @@ class App extends Component {
 
   calcOffset = (currentData, previousQuery, query) => {
     return query === previousQuery ? currentData.length : 0;
+  }
+
+  displayErrorMessage = (message) => {
+    this.setState({
+      error: true,
+      errorMessage: message,
+      querying: false,
+    });
+  }
+
+  hideErrorMessage = () => {
+    this.setState({ error: false, errorMessage: ''})
   }
   
   handleOnChange = (e) => {
@@ -72,6 +89,8 @@ class App extends Component {
       return response.json();
     }).then((body) => {
       this.setResultData(body.data);
+    }).catch((error) => {
+      this.displayErrorMessage(error.message);
     })
   }
   
@@ -103,24 +122,24 @@ class App extends Component {
   }
 
   render() {
-    const { query, result } = this.state;
-    let listOfGif;
+    const { result, error, errorMessage } = this.state;
+    let listOfGif, displayError;
+
+    if (error) {
+      displayError = <ErrorMessage error={errorMessage} hideErrorMessage={this.hideErrorMessage}/>
+    }
     
     if (result.length) {
       listOfGif = <GifList gifList={result} />
-      return (
-        <div className="App">
-          <AppSearchBar handleOnChange={this.handleOnChange} queryGiphyApi={this.queryGiphyApi} />
-          {listOfGif}
-        </div>
-      )
-    } else {
-      return (
-        <div className="App">
-          <AppSearchBar handleOnChange={this.handleOnChange} queryGiphyApi={this.queryGiphyApi} />        
-        </div>
-      )
     }
+    
+    return (
+      <div className="App">
+        {displayError}
+        <AppSearchBar handleOnChange={this.handleOnChange} queryGiphyApi={this.queryGiphyApi} />        
+        {listOfGif}
+      </div>
+    )
   }
 }
 
